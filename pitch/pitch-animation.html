@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Practice Metronome Pitch</title>
+<style>
+:root{--bg:#1c1c1b;--panel:#292a29;--panel2:#303231;--border:#515454;--teal:#51d6e5;--teal-dark:#126a80;--muted:#b1b3b3;--white:#f6f8f8;--orange:#ff521e;--yellow:#ffd833;--success:#83efaf}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:var(--white);font-family:system-ui,-apple-system,Roboto,"Segoe UI",sans-serif;overflow:hidden}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{width:1920px;height:1080px;position:relative;background:radial-gradient(ellipse at 50% 40%,#242625 0%,var(--bg) 70%);overflow:hidden;transform-origin:center}
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .6s ease;pointer-events:none}
+.scene.on{opacity:1}
+h1{font-size:120px;font-weight:800;letter-spacing:-3px;line-height:1.05;text-align:center}
+h2{font-size:76px;font-weight:800;letter-spacing:-2px;line-height:1.1}
+p.lead{font-size:40px;color:var(--muted);margin-top:28px;line-height:1.35}
+.teal{color:var(--teal)}.orange{color:var(--orange)}.yellow{color:var(--yellow)}.green{color:var(--success)}
+.rise{opacity:0;transform:translateY(40px)}
+.on .rise{animation:rise .8s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+.d1{animation-delay:.3s!important}.d2{animation-delay:.9s!important}.d3{animation-delay:1.6s!important}.d4{animation-delay:2.4s!important}.d5{animation-delay:3.2s!important}.d6{animation-delay:4s!important}
+.split{display:flex;gap:110px;align-items:center;width:1600px}
+.split .copy{flex:1}
+.phone{width:520px;height:900px;border-radius:64px;background:var(--panel);border:3px solid var(--border);box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 14px #111;padding:56px 36px;display:flex;flex-direction:column;gap:22px;position:relative;overflow:hidden}
+.card{background:var(--panel2);border:2px solid var(--border);border-radius:24px;padding:24px 26px}
+/* scene 1 */
+#s1 .scatter{position:absolute;font-size:44px;color:var(--muted);opacity:0}
+#s1.on .scatter{animation:drift 5s ease-in-out forwards}
+@keyframes drift{0%{opacity:0;transform:translateY(20px)}25%{opacity:.75}80%{opacity:.75}100%{opacity:0;transform:translateY(-30px)}}
+/* metronome */
+.bpm{font-size:180px;font-weight:800;text-align:center;line-height:1;font-variant-numeric:tabular-nums}
+.bpm small{display:block;font-size:30px;color:var(--muted);font-weight:600;letter-spacing:4px;margin-top:8px}
+.beats{display:flex;gap:18px;justify-content:center;margin-top:10px}
+.beat{width:76px;height:76px;border-radius:50%;border:3px solid var(--border);background:var(--panel2);transition:background .06s,transform .06s}
+.beat.hit{background:var(--teal);border-color:var(--teal);transform:scale(1.12)}
+.beat.accent.hit{background:var(--orange);border-color:var(--orange)}
+.pend{height:300px;position:relative;display:flex;justify-content:center}
+.arm{position:absolute;bottom:20px;width:10px;height:260px;background:linear-gradient(var(--teal),var(--teal-dark));border-radius:6px;transform-origin:bottom center}
+.arm::after{content:"";position:absolute;top:60px;left:-22px;width:54px;height:40px;border-radius:10px;background:var(--yellow)}
+.base{position:absolute;bottom:0;width:220px;height:30px;border-radius:15px;background:var(--border)}
+.chips{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.chip{font-size:24px;padding:10px 20px;border-radius:999px;background:var(--panel2);border:2px solid var(--border);color:var(--muted)}
+.chip.hl{border-color:var(--teal);color:var(--teal)}
+.feat{font-size:38px;color:var(--muted);margin-top:22px;display:flex;gap:18px;align-items:center}
+.feat b{color:var(--white)}
+.dot{width:16px;height:16px;border-radius:50%;background:var(--teal);flex:none}
+/* timers */
+.timer{display:flex;justify-content:space-between;align-items:center}
+.timer .name{font-size:26px;color:var(--muted);font-weight:600}
+.timer .t{font-size:62px;font-weight:800;font-variant-numeric:tabular-nums}
+.timer .state{width:22px;height:22px;border-radius:50%;background:var(--border)}
+.timer.run .state{background:var(--success);box-shadow:0 0 18px var(--success)}
+.timer.done{border-color:var(--yellow)}
+.timer.done .t{color:var(--yellow)}
+#timersPhone{gap:16px;padding:48px 32px}#timersPhone .card{padding:16px 24px}#timersPhone .t{font-size:54px}
+.pauseall{margin-top:auto;text-align:center;font-size:30px;font-weight:700;padding:22px;border-radius:22px;background:var(--teal-dark);color:var(--white)}
+/* record */
+.ring{width:300px;height:300px;margin:0 auto;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.ring .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:64px;font-weight:800}
+.ring .lbl small{font-size:24px;color:var(--muted);font-weight:600}
+.bars{display:flex;gap:16px;align-items:flex-end;height:220px;padding:0 6px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;height:100%;justify-content:flex-end}
+.bar i{display:block;width:100%;border-radius:10px 10px 4px 4px;background:var(--teal);height:0;transition:height 1s cubic-bezier(.2,.8,.2,1)}
+.bar.today i{background:var(--orange)}
+.bar span{font-size:22px;color:var(--muted)}
+.saved{position:absolute;left:36px;right:36px;top:56px;padding:22px 26px;border-radius:22px;background:var(--success);color:#0d2a1a;font-size:28px;font-weight:700;transform:translateY(-200px);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.saved.show{transform:none}
+/* privacy */
+.grid4{display:grid;grid-template-columns:repeat(2,560px);gap:36px;margin-top:60px}
+.tile{background:var(--panel);border:2px solid var(--border);border-radius:28px;padding:40px;font-size:40px;font-weight:700}
+.tile small{display:block;font-size:28px;color:var(--muted);font-weight:500;margin-top:12px}
+/* end */
+.logo{width:200px;height:200px;border-radius:48px;margin:0 auto 50px;box-shadow:0 20px 80px rgba(81,214,229,.35)}
+/* controls */
+#hud{position:fixed;left:0;right:0;bottom:0;padding:14px 18px;display:flex;gap:14px;align-items:center;background:linear-gradient(transparent,rgba(0,0,0,.75));opacity:.25;transition:opacity .3s}
+#hud:hover{opacity:1}
+#hud button{font:600 15px system-ui,sans-serif;color:#fff;background:#333;border:1px solid #555;border-radius:8px;padding:8px 14px;cursor:pointer}
+#prog{flex:1;height:6px;background:#333;border-radius:3px;cursor:pointer;position:relative}
+#prog i{position:absolute;left:0;top:0;bottom:0;background:var(--teal);border-radius:3px;width:0}
+#clock{font:14px ui-monospace,monospace;color:#ccc;min-width:90px;text-align:right}
+#start{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:5}
+#start button{font:700 28px system-ui,sans-serif;padding:24px 48px;border-radius:999px;border:0;background:var(--teal);color:#0b2b30;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.on .rise{animation-duration:.01s}}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+
+  <!-- 0-7s: the problem -->
+  <section class="scene" id="s1" data-start="0" data-end="7">
+    <span class="scatter" style="left:180px;top:170px">metronome app</span>
+    <span class="scatter" style="right:200px;top:230px;animation-delay:.4s">kitchen timer</span>
+    <span class="scatter" style="left:300px;bottom:220px;animation-delay:.8s">stopwatch</span>
+    <span class="scatter" style="right:260px;bottom:180px;animation-delay:1.2s">practice log notebook</span>
+    <div style="text-align:center">
+      <h1 class="rise">Practicing takes<br><span class="orange">four apps</span> and a notebook.</h1>
+      <p class="lead rise d4">It shouldn't.</p>
+    </div>
+  </section>
+
+  <!-- 7-11s: intro -->
+  <section class="scene" id="s2" data-start="7" data-end="11">
+    <div style="text-align:center">
+      <img class="logo rise" src="../icon-512.png" alt="">
+      <h1 class="rise d1">Practice <span class="teal">Metronome</span></h1>
+      <p class="lead rise d2">One app for the whole practice session.</p>
+    </div>
+  </section>
+
+  <!-- 11-24s: metronome -->
+  <section class="scene" id="s3" data-start="11" data-end="24">
+    <div class="split">
+      <div class="phone">
+        <div class="bpm" id="bpm">96<small>BPM</small></div>
+        <div class="pend"><div class="arm" id="arm"></div><div class="base"></div></div>
+        <div class="beats" id="beats"><div class="beat accent"></div><div class="beat"></div><div class="beat"></div><div class="beat"></div></div>
+        <div class="chips" style="margin-top:18px"><span class="chip hl">4 / bar</span><span class="chip" id="subchip">♩ quarter</span><span class="chip">accent 1</span><span class="chip" id="tapchip">tap tempo</span></div>
+      </div>
+      <div class="copy">
+        <h2 class="rise">A metronome that<br><span class="teal">keeps up with you.</span></h2>
+        <div class="feat rise d2"><span class="dot"></span><span><b>30–240 BPM</b>, nudge by one</span></div>
+        <div class="feat rise d3"><span class="dot"></span><span><b>1–12 beats</b> per bar, accents</span></div>
+        <div class="feat rise d4"><span class="dot"></span><span><b>Subdivisions</b> up to sixteenths</span></div>
+        <div class="feat rise d5"><span class="dot"></span><span><b>Tap tempo</b> to match a recording</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 24-37s: timers -->
+  <section class="scene" id="s4" data-start="24" data-end="37">
+    <div class="split">
+      <div class="copy">
+        <h2 class="rise">Four timers.<br><span class="yellow">One tap to pause them all.</span></h2>
+        <p class="lead rise d2">Run a 3-minute focus drill inside a 30-minute session. Name every timer. Repeat any countdown.</p>
+        <p class="lead rise d4">Phone rings? <b style="color:var(--white)">Pause All</b> stops the clock and the click together.</p>
+      </div>
+      <div class="phone" id="timersPhone">
+        <div class="card timer run" id="tm1"><div><div class="name">Focus: scales</div><div class="t">3:00</div></div><div class="state"></div></div>
+        <div class="card timer run" id="tm2"><div><div class="name">Total practice</div><div class="t">0:00</div></div><div class="state"></div></div>
+        <div class="card timer" id="tm3"><div><div class="name">Sight-reading</div><div class="t">5:00</div></div><div class="state"></div></div>
+        <div class="card timer" id="tm4"><div><div class="name">Repertoire</div><div class="t">10:00</div></div><div class="state"></div></div>
+        <div class="pauseall" id="pauseBtn">Pause All</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 37-49s: record -->
+  <section class="scene" id="s5" data-start="37" data-end="49">
+    <div class="split">
+      <div class="phone">
+        <div class="saved" id="saved">✓ Saved: "Etude no. 3 — slow then up to tempo"</div>
+        <div class="ring" style="margin-top:90px">
+          <svg width="300" height="300"><circle cx="150" cy="150" r="128" fill="none" stroke="#3a3c3b" stroke-width="26"/><circle id="ringArc" cx="150" cy="150" r="128" fill="none" stroke="#83efaf" stroke-width="26" stroke-linecap="round" stroke-dasharray="804" stroke-dashoffset="804" style="transition:stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)"/></svg>
+          <div class="lbl"><span id="ringMin">0</span><small>of 30 min goal</small></div>
+        </div>
+        <div class="card" style="margin-top:auto">
+          <div style="font-size:24px;color:var(--muted);margin-bottom:14px">This week · <b style="color:var(--white)" id="weekTot">0h 00m</b></div>
+          <div class="bars" id="bars"></div>
+        </div>
+      </div>
+      <div class="copy">
+        <h2 class="rise">Every session,<br><span class="green">written down for you.</span></h2>
+        <p class="lead rise d2">Finish &amp; save with a label and notes. Watch a daily goal ring fill and a week of practice stack up.</p>
+        <p class="lead rise d4">Export to CSV for a teacher, or JSON to back it up.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 49-55s: private -->
+  <section class="scene" id="s6" data-start="49" data-end="55">
+    <div style="text-align:center">
+      <h2 class="rise">Nothing to sign up for.</h2>
+      <div class="grid4">
+        <div class="tile rise d1">No account<small>open it and play</small></div>
+        <div class="tile rise d2">No tracking<small>data stays on your device</small></div>
+        <div class="tile rise d3">Works offline<small>install to your home screen</small></div>
+        <div class="tile rise d4">No subscription<small>one file, no dependencies</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 55-60s: close -->
+  <section class="scene" id="s7" data-start="55" data-end="60.5">
+    <div style="text-align:center">
+      <img class="logo rise" src="../icon-512.png" alt="">
+      <h1 class="rise d1">Press play.<br><span class="teal">Practice.</span></h1>
+      <p class="lead rise d2">Practice Metronome</p>
+    </div>
+  </section>
+
+</div></div>
+
+<div id="hud"><button id="playBtn">Pause</button><button id="soundBtn">Sound: on</button><div id="prog"><i></i></div><div id="clock">0:00 / 1:00</div></div>
+<div id="start"><button>▶ Play pitch (60s)</button></div>
+
+<script>
+(function(){
+var DUR=60, stage=document.getElementById('stage'), scenes=[].slice.call(document.querySelectorAll('.scene'));
+function fit(){var s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')'}
+addEventListener('resize',fit);fit();
+
+var t=0,playing=false,last=0,sound=true,ac=null,lastBeatIdx=-1;
+function click(accent){if(!sound||!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=accent?1600:1000;g.gain.setValueAtTime(.25,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+.05);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.06)}
+function chime(){if(!sound||!ac)return;[880,1320].forEach(function(f,i){var o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;var s=ac.currentTime+i*.12;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.2,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.8);o.connect(g).connect(ac.destination);o.start(s);o.stop(s+.85)})}
+
+function fmt(sec){sec=Math.max(0,Math.round(sec));return Math.floor(sec/60)+':'+('0'+sec%60).slice(-2)}
+var beats=document.querySelectorAll('#beats .beat'),arm=document.getElementById('arm'),bpmEl=document.getElementById('bpm');
+var days=['M','T','W','T','F','S','S'],mins=[22,35,0,28,41,18,0],barsEl=document.getElementById('bars');
+days.forEach(function(d,i){var b=document.createElement('div');b.className='bar'+(i===6?' today':'');b.innerHTML='<i></i><span>'+d+'</span>';barsEl.appendChild(b)});
+var flags={};
+
+function scene3(lt){ // metronome, lt = local time
+  var bpm=lt<6?96:Math.min(120,96+Math.floor((lt-6)*8)); // ramps up via +/- after 6s
+  bpmEl.firstChild.nodeValue=bpm;
+  document.getElementById('subchip').textContent=lt>8?'♫ eighths':'♩ quarter';
+  document.getElementById('subchip').className='chip'+(lt>8?' hl':'');
+  document.getElementById('tapchip').className='chip'+(lt>4&&lt<6?' hl':'');
+  // integrate beat phase approximately with current bpm
+  var beatLen=60/bpm, idx=Math.floor(lt/beatLen), ph=(lt%beatLen)/beatLen;
+  arm.style.transform='rotate('+(Math.sin((idx+ph)*Math.PI)*24)+'deg)';
+  if(idx!==lastBeatIdx){lastBeatIdx=idx;var k=idx%4;beats.forEach(function(b,i){b.classList.toggle('hit',i===k)});if(playing)click(k===0)}
+}
+function scene4(lt){
+  var paused=lt>8.5&&lt<11, run=lt>8.5?(paused?8.5:lt-2.5):lt; // pause between 8.5-11
+  var speed=20; // demo time runs 20x
+  var e=run*speed;
+  var f=180-e; if(f<=0&&!flags.chime){flags.chime=1;if(playing)chime()}
+  document.querySelector('#tm1 .t').textContent=fmt(Math.max(0,f));
+  document.getElementById('tm1').classList.toggle('done',f<=0);
+  document.querySelector('#tm2 .t').textContent=fmt(e+300);
+  var s3=lt>3?Math.max(0,300-(run-3)*speed):300;
+  document.querySelector('#tm3 .t').textContent=fmt(s3);
+  ['tm1','tm2','tm3'].forEach(function(id){var on=!paused&&(id!=='tm1'||f>0)&&(id!=='tm3'||lt>3);document.getElementById(id).classList.toggle('run',on)});
+  var pb=document.getElementById('pauseBtn');pb.textContent=paused?'Resume All':'Pause All';pb.style.background=paused?'var(--orange)':'var(--teal-dark)';
+}
+function scene5(lt){
+  if(lt>.6&&!flags.saved){flags.saved=1;document.getElementById('saved').classList.add('show')}
+  if(lt>3.2)document.getElementById('saved').classList.remove('show');
+  if(lt>1.2&&!flags.ring){flags.ring=1;document.getElementById('ringArc').style.strokeDashoffset=804*(1-1)}
+  var m=Math.min(32,Math.round(Math.max(0,lt-1.2)/1.6*32));document.getElementById('ringMin').textContent=m;
+  if(lt>2&&!flags.bars){flags.bars=1;var bs=barsEl.querySelectorAll('i');mins.forEach(function(v,i){setTimeout(function(){bs[i].style.height=(i===6?32:v)/45*100+'%'},i*120)})}
+  var tot=Math.round(Math.min(1,Math.max(0,lt-2)/1.5)*176);document.getElementById('weekTot').textContent=Math.floor(tot/60)+'h '+('0'+tot%60).slice(-2)+'m';
+}
+function resetDyn(){flags={};lastBeatIdx=-1;document.getElementById('saved').classList.remove('show');document.getElementById('ringArc').style.strokeDashoffset=804;barsEl.querySelectorAll('i').forEach(function(i){i.style.height=0})}
+
+function render(){
+  scenes.forEach(function(s){var a=+s.dataset.start,b=+s.dataset.end,on=t>=a&&t<b;if(on!==s.classList.contains('on'))s.classList.toggle('on',on)});
+  if(t>=11&&t<24)scene3(t-11);
+  if(t>=24&&t<37)scene4(t-24);
+  if(t>=37&&t<49)scene5(t-37);
+  document.querySelector('#prog i').style.width=(t/DUR*100)+'%';
+  document.getElementById('clock').textContent=fmt(t)+' / 1:00';
+}
+function loop(now){if(!playing)return;t+=(now-last)/1000;last=now;if(t>=DUR){t=DUR;playing=false;document.getElementById('playBtn').textContent='Replay'}render();if(playing)requestAnimationFrame(loop)}
+function play(){if(t>=DUR){seek(0)}playing=true;last=performance.now();document.getElementById('playBtn').textContent='Pause';requestAnimationFrame(loop)}
+function pause(){playing=false;document.getElementById('playBtn').textContent='Play'}
+function seek(x){t=x;resetDyn();scenes.forEach(function(s){s.classList.remove('on')});void stage.offsetWidth;render()}
+
+document.querySelector('#start button').onclick=function(){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}document.getElementById('start').remove();play()};
+document.getElementById('playBtn').onclick=function(){playing?pause():play()};
+document.getElementById('soundBtn').onclick=function(){sound=!sound;this.textContent='Sound: '+(sound?'on':'off')};
+document.getElementById('prog').onclick=function(e){var r=this.getBoundingClientRect();seek((e.clientX-r.left)/r.width*DUR)};
+addEventListener('keydown',function(e){if(e.code==='Space'){e.preventDefault();playing?pause():play()}});
+var m=location.hash.match(/t=([\d.]+)/); // #t=30 : still frame at 30s, for previews
+if(m){document.getElementById('start').remove();document.getElementById('hud').style.display='none';var target=+m[1];t=0;resetDyn();for(var x=0;x<=target;x+=1/30){t=x;render()}document.querySelectorAll('.rise').forEach(function(r){r.style.animation='none';r.style.opacity=1;r.style.transform='none'});scenes.forEach(function(s){s.style.transition='none'})}
+else render();
+})();
+</script>
+</body>
+</html>
