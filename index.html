@@ -3,7 +3,7 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#176b82"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Practice Metronome">
-<meta name="description" content="Practice metronome with four independent timers, Pause All, and personal practice records.">
+<meta name="description" content="Metronome, compact timers, instrument-specific practice records, and teacher report sharing.">
 <link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png">
 <title>Practice Metronome</title>
 <style>
@@ -12,19 +12,76 @@
 @media(min-width:600px){.page{padding:0 31px 55px}.header{padding:12px 31px}.tabs{margin-left:32px;margin-right:32px}.beat-lamps{min-height:135px}.summary-cols{grid-template-columns:repeat(3,1fr) 140px}.goal-ring{width:128px;height:128px}.goal-ring-inner{width:101px;height:101px}}
 @media(max-width:400px){.header{padding:8px 11px}.tabs{margin:11px 10px 0}.page{padding:0 11px 32px}.tab span{display:none}.summary-cols{grid-template-columns:repeat(3,1fr);gap:4px}.goal-ring{grid-column:1 / -1;margin-top:9px;width:95px;height:95px}.goal-ring-inner{width:71px;height:71px}.summary-col strong{font-size:24px}.timer-card{padding:11px 9px}.timer-icon{width:37px;height:37px}.record-summary,.week-chart{padding:14px}.banner-actions .action{font-size:13px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+/* Compact practice screen, designed for a small Android viewport */
+.header{height:55px;padding:5px 11px;gap:5px;position:relative}
+.header-title{font-size:24px}.icon-btn{min-width:36px;min-height:36px}.icon-btn svg{width:22px;height:22px}
+.compact-tabs{grid-template-columns:1.18fr 1fr .72fr .78fr;margin:7px 13px 0;border-radius:13px}
+.compact-tabs .tab{min-height:36px;font-size:11px;gap:3px;padding:2px 1px}
+.compact-tabs .tab svg{width:15px;height:15px}.page{padding:0 13px 24px}
+.instrument-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 2px 0}
+.instrument-button{min-height:32px;padding:3px 14px;border:1px solid #6bc6d0;border-radius:20px;background:#153f49;color:#dcfbff;font-weight:650;font-size:13px}
+.session-indicator{font-size:11px;color:#abbcbc;max-width:100px;text-align:right}
+.met-head{margin-top:0}.beat-lamps{min-height:35px;margin-top:0}.beat{width:22px;max-width:22px;box-shadow:inset 0 0 0 2px #816b15,0 0 4px #0008}
+.bpm-area{margin:3px auto 0;grid-template-columns:1fr 1.3fr 1fr;gap:3px;max-width:365px}
+.bpm-controls{gap:6px}.square{width:47px;height:30px;font-size:18px;border-radius:8px}
+.bpm-main .neighbor{display:none}.bpm-value{font-size:clamp(49px,13vw,68px);line-height:1.05}
+.bpm-name{text-align:center;justify-content:center;font-size:12px;margin:-2px 0 0;color:#bbc2c2}
+.slider{margin:9px 0 8px;height:3px}.met-meta{padding:0;gap:2px}.meta-label{font-size:11px}.meta-value{font-size:20px;margin-top:0;min-height:31px}.meta-press{min-height:31px}
+.met-meta .meta-press svg{height:23px;width:23px}.met-transport{padding:6px 24px 6px}
+.met-play{width:57px;height:49px;border-radius:12px}.met-play svg{width:30px;height:30px}
+.met-transport .icon-btn{width:36px;height:36px}.compact-timers{border-top:1px solid #535b5b;margin-top:5px;padding-top:7px}
+.compact-heading{margin:0 0 6px}.compact-heading h2{font-size:17px}.compact-heading .mini-link{font-size:18px;padding:0 8px}
+.report-status{padding:5px 10px;margin:0 0 7px;border:1px solid #566f73;border-radius:10px;background:#243033;font-size:11px;color:#cfebed;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px}
+.report-status strong{font-weight:650}.report-status .status-detail{font-size:10px;color:#a4bcc0}.report-status.hidden{display:none}
+.timer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.timer-card{display:flex;flex-direction:column;justify-content:space-between;min-height:112px;margin:0;padding:9px 10px;border-radius:13px;gap:4px;overflow:hidden}
+.timer-main{gap:1px}.timer-title{font-size:13px;max-width:120px}.timer-sub{font-size:10px;line-height:1.2}
+.timer-top{gap:2px}.timer-time{font-size:clamp(26px,7.5vw,34px);white-space:nowrap}.timer-icon{width:28px;height:28px;border-radius:9px}.timer-icon svg{width:17px;height:17px}
+.timer-buttons{gap:4px}.timer-card-foot{display:flex;align-items:center;justify-content:space-between;gap:3px}
+.timer-state{font-size:10px;min-height:13px}.edit-timer{padding:2px}.edit-timer svg{width:14px;height:14px}
+.optional-grid{margin-top:7px}.optional-btn{margin:0;min-height:38px;padding:5px 4px;font-size:12px;border-radius:10px}
+.optional-sub{display:none}.session-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.session-actions .action{min-height:40px;padding:7px 8px;font-size:13px}
+.record-page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}.record-page-heading .page-title{margin:5px 0 0}
+.record-filter-row{display:flex;align-items:center;gap:12px;margin:10px 0}.record-filter-row label{font-size:12px;color:#abb}.record-filter-row select{flex:1;min-height:36px}
+select,.field select{border:1px solid #75848a;border-radius:10px;background:#252d30;color:white;padding:9px 11px;max-width:100%}
+.choices{display:flex;flex-wrap:wrap;gap:6px}.choice{display:flex;align-items:center;gap:5px;padding:8px;border:1px solid #55696d;border-radius:10px;font-size:13px;background:#253135}.choice input{accent-color:#55dce7}
+.report-card{border:1px solid #505f61;background:#242b2d;border-radius:13px;padding:12px;margin:8px 0}.report-card h3{margin:0 0 7px;font-size:15px}.report-line{display:flex;align-items:center;justify-content:space-between;gap:8px}.report-meta{font-size:12px;color:#bac7c9}.report-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.report-actions button{min-height:33px}
+.instrument-management{display:flex;align-items:center;gap:6px;border-bottom:1px solid #3d4548;padding:7px 0}.instrument-management span{flex:1}
+.field-checkbox{display:flex;gap:8px;align-items:center;margin:8px 0}.field-checkbox input{accent-color:#55dce7;width:19px;height:19px}
+.share-columns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.report-hint{font-size:12px;color:#b5c4c6}
+/* The entire practice surface should stay within a typical phone viewport. */
+@media(max-width:380px){.page{padding:0 9px 16px}.header-title{font-size:21px}.compact-tabs .tab{font-size:10px}.timer-card{padding:8px 7px}.timer-time{font-size:27px}.bpm-value{font-size:56px}.report-status{font-size:10px}}
+@media(max-height:740px){.header{height:47px}.compact-tabs .tab{min-height:32px}.beat-lamps{min-height:27px}.bpm-value{font-size:51px}.met-transport{padding:3px 20px}.met-play{height:43px;width:51px}.timer-card{min-height:100px}.compact-timers{padding-top:4px}.timer-grid{gap:5px}.optional-btn{min-height:32px}.session-actions{margin-top:5px}}
+@media print{.header,.tabs,.page,.toast,.overlay,.drawer-back{display:none!important}#printReport{display:block!important;background:#fff;color:#111;font:14px Arial;padding:15px}#printReport h1{font-size:22px}#printReport table{border-collapse:collapse;width:100%}#printReport th,#printReport td{border:1px solid #999;padding:6px}}
+/* On small phones the original app hid all tab labels; restore concise text. */
+.compact-tabs .tab span{display:block!important;white-space:nowrap}
+.compact-tabs .tab svg{display:none!important}
+
 </style></head><body>
 <div class="app">
 <header class="header"><button class="icon-btn" id="menuBtn" aria-label="Open menu" title="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><div class="header-title" id="headerTitle">Metronome</div><button class="icon-btn" id="soundBtn" aria-label="Sound on/off" title="Toggle sound"></button><button class="icon-btn" id="headerSettings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 3v8M16 13v8"/></svg></button></header>
-<nav class="tabs" aria-label="App sections"><button class="tab" id="tabMet" data-page="metronome" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M4 21L12 3l8 18zM12 5l4 7M9 17h6"/></svg><span>Metronome</span></button><button class="tab" id="tabRecord" data-page="records" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M7 2v4M17 2v4M3 10h18M7 15h4"/></svg><span>Practice Record</span></button><button class="tab" id="tabSetting" data-page="settings" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg><span>Settings</span></button></nav>
+<nav class="tabs compact-tabs" aria-label="App sections"><button class="tab" id="tabMet" data-page="metronome" aria-selected="true"><svg viewBox="0 0 24 24"><path d="M4 21L12 3l8 18zM12 5l4 7M9 17h6"/></svg><span>Metronome</span></button><button class="tab" id="tabRecord" data-page="records" aria-selected="false"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M7 2v4M17 2v4M3 10h18M7 15h4"/></svg><span>Records</span></button><button class="tab" id="tabReports" data-page="reports" aria-selected="false"><span>Reports</span></button><button class="tab" id="tabSetting" data-page="settings" aria-selected="false"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 17h16M8 4v6M16 14v6"/></svg><span>Settings</span></button></nav>
 <main>
 <div class="page" id="pageMetronome">
-<section class="met-head" aria-label="Metronome controls"><div class="beat-lamps" id="beatLamps"></div><div class="line"></div><div class="bpm-area"><div class="bpm-controls"><button class="square" data-bpm="-1" aria-label="Subtract 1 BPM">-1</button><button class="square" data-bpm="-5" aria-label="Subtract 5 BPM">-5</button></div><div class="bpm-main"><div class="neighbor" id="prevBpm">81</div><button class="bpm-value" id="bpmValue" aria-label="Edit BPM">82</button><div class="neighbor" id="nextBpm">83</div></div><div class="bpm-controls"><button class="square" data-bpm="1" aria-label="Add 1 BPM">+1</button><button class="square" data-bpm="5" aria-label="Add 5 BPM">+5</button></div></div><div class="bpm-name" id="bpmName">Andante</div><input class="slider" id="bpmSlider" aria-label="BPM slider" type="range" min="30" max="240" value="82"><div class="met-meta"><div><div class="meta-label">Beats/bar</div><button class="meta-value meta-press" id="beatsButton" title="Change beats per bar">4</button></div><div><div class="meta-label">Clicks/beat</div><button class="meta-value meta-press" id="subButton" title="Change subdivisions">1</button></div><div><div class="meta-label">Tap tempo</div><button class="meta-value meta-press" id="tapBtn" title="Tap repeatedly to set BPM"><svg width="36" height="36" viewBox="0 0 24 24" style="stroke:#c4c4c4;fill:none;stroke-width:1.9"><path d="M5 11c1-4 13-4 14 0v6c-2 4-12 4-14 0zM5 11c1 4 13 4 14 0M12 12l7-7"/></svg></button></div></div><div class="met-transport"><button class="icon-btn" id="accentBtn" title="Accent first beat" aria-label="Toggle beat accent"></button><button class="met-play" id="metPlay" title="Start metronome" aria-label="Start metronome"></button><button class="icon-btn" id="wakeBtn" title="Keep screen awake" aria-label="Keep screen awake"></button></div></section>
-<div class="section-line"></div><section aria-label="Practice timers"><div class="section-heading"><h2><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 13V9M9 2h6M12 2v3"/></svg>Practice Timers</h2><button class="mini-link" id="timersHelp">How it works</button></div><div class="session-banner"><div class="banner-top"><strong>Practice session</strong><span class="status-pill" id="sessionState">Not started</span></div><div class="banner-actions"><button class="action primary" id="pauseAllBtn">Start session</button><button class="action" id="finishBtn" disabled>Finish &amp; save</button></div></div><div id="timerCards"></div><div id="optionalCards"></div><p class="content-note">Tap a timer's time to adjust it. Tap the pencil to rename it. Pausing all timers preserves your progress.</p></section>
+<div class="instrument-toolbar"><button type="button" id="instrumentButton" class="instrument-button" aria-label="Choose instrument">♫ <span id="instrumentLabel">Piano</span> ▾</button><span class="session-indicator" id="sessionState">Ready</span></div>
+<section class="met-head" aria-label="Metronome controls"><div class="beat-lamps" id="beatLamps"></div><div class="bpm-area"><div class="bpm-controls"><button class="square" data-bpm="-1" aria-label="Subtract 1 BPM">-1</button><button class="square" data-bpm="-5" aria-label="Subtract 5 BPM">-5</button></div><div class="bpm-main"><div class="neighbor" id="prevBpm">81</div><button class="bpm-value" id="bpmValue" aria-label="Edit BPM">82</button><div class="neighbor" id="nextBpm">83</div></div><div class="bpm-controls"><button class="square" data-bpm="1" aria-label="Add 1 BPM">+1</button><button class="square" data-bpm="5" aria-label="Add 5 BPM">+5</button></div></div><div class="bpm-name" id="bpmName">Andante</div><input class="slider" id="bpmSlider" aria-label="BPM slider" type="range" min="30" max="240" value="82"><div class="met-meta"><div><div class="meta-label">Beats/bar</div><button class="meta-value meta-press" id="beatsButton" title="Change time signature">4/4</button></div><div><div class="meta-label">Clicks/beat</div><button class="meta-value meta-press" id="subButton" title="Change subdivisions">1</button></div><div><div class="meta-label">Tap tempo</div><button class="meta-value meta-press" id="tapBtn" title="Tap repeatedly to set BPM"><svg width="36" height="36" viewBox="0 0 24 24" style="stroke:#c4c4c4;fill:none;stroke-width:1.9"><path d="M5 11c1-4 13-4 14 0v6c-2 4-12 4-14 0zM5 11c1 4 13 4 14 0M12 12l7-7"/></svg></button></div></div><div class="met-transport"><button class="icon-btn" id="accentBtn" title="Accent first beat" aria-label="Toggle beat accent"></button><button class="met-play" id="metPlay" title="Start metronome" aria-label="Start metronome"></button><button class="icon-btn" id="wakeBtn" title="Keep screen awake" aria-label="Keep screen awake"></button></div></section>
+<section aria-label="Practice timers" class="compact-timers">
+<div class="section-heading compact-heading"><h2>◴ Practice Timers</h2><button class="mini-link" id="timersHelp" aria-label="How timers work">ⓘ</button></div>
+<div class="report-status hidden" id="reportStatus" role="button" tabindex="0" aria-label="Practice report status"></div>
+<div class="timer-grid" id="timerCards"></div>
+<div class="timer-grid optional-grid" id="optionalCards"></div>
+<div class="session-actions"><button class="action primary" id="pauseAllBtn">▶ Start Session</button><button class="action" id="finishBtn" disabled>Finish &amp; Save</button></div>
+</section>
 </div>
-<div class="page hidden" id="pageRecords"><h1 class="page-title">Practice Record</h1><div class="date-nav"><button id="prevDate" aria-label="Previous date">◀</button><input type="date" id="selectedDate" aria-label="Date for practice record"><button id="nextDate" aria-label="Next date">▶</button><button id="todayDate">Today</button></div><section class="record-summary" aria-label="Daily practice summary"><div class="date-label" id="summaryDate"></div><div class="summary-cols"><div class="summary-col"><label>Total practice</label><strong id="summaryTime">0:00</strong></div><div class="summary-col"><label>Focus intervals</label><strong id="summaryFocus">0</strong></div><div class="summary-col"><label>Sessions</label><strong id="summarySessions">0</strong></div><div class="goal-ring" id="goalRing"><div class="goal-ring-inner"><span>Goal</span><strong id="goalMinutes">60 min</strong><b id="goalPercent">0%</b></div></div></div></section><section class="week-chart"><div class="weekly-header"><h3>This Week</h3><span class="weekly-total" id="weekTotal">Total 0 min</span></div><div class="week-bars" id="weekBars"></div></section><h2 class="recent-title" id="recentTitle">Recent Sessions</h2><div id="recordList"></div><div class="footer-note">Practice records are saved on this device. Export a backup from Settings.</div></div>
-<div class="page hidden" id="pageSettings"><h1 class="page-title">Settings</h1><div class="settings-card"><h3>Practice</h3><div class="setting-row"><label>Daily practice goal<small>Minutes per day</small></label><input id="dailyGoalInput" type="number" min="1" max="1440" step="1" value="60"></div><div class="setting-row"><label>Pause metronome with session<small>Pause All stops the clicks too</small></label><span class="switch"><input id="pauseMetToggle" type="checkbox" checked aria-label="Pause metronome with session"></span></div><div class="setting-row"><label>Countdown completion sound<small>Brief chime at the end of a timer</small></label><span class="switch"><input id="chimeToggle" type="checkbox" checked aria-label="Countdown completion sound"></span></div><div class="setting-row"><label>Completion chime volume<small>Separate from the metronome</small></label><input type="range" min="0" max="100" id="alertVolumeInput" value="60"></div><div class="setting-row"><label>Vibrate on completion<small>When supported by your device</small></label><span class="switch"><input id="vibrateToggle" type="checkbox" checked aria-label="Vibrate on timer finish"></span></div></div><div class="settings-card"><h3>Metronome</h3><div class="setting-row"><label>Click volume<small>Applies to the metronome and alerts</small></label><input type="range" min="0" max="100" id="volumeInput" value="65"></div><div class="setting-row"><label>Accent first beat<small>Stronger sound on beat one</small></label><span class="switch"><input id="accentToggle" type="checkbox" checked aria-label="Accent first beat"></span></div></div><div class="settings-card"><h3>Your data</h3><p class="hint">Your records stay in this browser on this device. They are not sent to a server. Make a backup if you switch devices or clear browser data.</p><div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px"><button class="action small" id="exportJson">Export backup</button><button class="action small" id="exportCsv">Export CSV</button><button class="action small" id="importButton">Import backup</button><input type="file" accept="application/json,.json" id="importFile" class="hidden"></div><div style="margin-top:18px"><button class="action small warn" id="clearHistory">Delete practice history</button></div></div><div class="settings-card"><h3>Install &amp; offline use</h3><p class="hint">This app can work offline. To install it like a regular app, put the included app files on a secure HTTPS website, open that address, and use “Add to Home Screen” (iPhone/iPad) or “Install app” (Android/Chrome). A downloaded HTML file can also open in a browser, although saving may depend on the browser's file permissions.</p></div></div>
+<div class="page hidden" id="pageRecords"><div class="record-page-heading"><h1 class="page-title">Practice Record</h1><button class="action small primary" id="shareRecords">↗ Share</button></div><div class="record-filter-row"><label for="recordInstrumentFilter">Instrument</label><select id="recordInstrumentFilter"><option value="all">All instruments</option></select></div><div class="date-nav"><button id="prevDate" aria-label="Previous date">◀</button><input type="date" id="selectedDate" aria-label="Date for practice record"><button id="nextDate" aria-label="Next date">▶</button><button id="todayDate">Today</button></div><section class="record-summary" aria-label="Daily practice summary"><div class="date-label" id="summaryDate"></div><div class="summary-cols"><div class="summary-col"><label>Total practice</label><strong id="summaryTime">0:00</strong></div><div class="summary-col"><label>Focus intervals</label><strong id="summaryFocus">0</strong></div><div class="summary-col"><label>Sessions</label><strong id="summarySessions">0</strong></div><div class="goal-ring" id="goalRing"><div class="goal-ring-inner"><span>Goal</span><strong id="goalMinutes">60 min</strong><b id="goalPercent">0%</b></div></div></div></section><section class="week-chart"><div class="weekly-header"><h3>This Week</h3><span class="weekly-total" id="weekTotal">Total 0 min</span></div><div class="week-bars" id="weekBars"></div></section><h2 class="recent-title" id="recentTitle">Recent Sessions</h2><div id="recordList"></div><div class="footer-note">Practice records are saved on this device. Export a backup from Settings.</div></div>
+<div class="page hidden" id="pageReports"><div class="record-page-heading"><h1 class="page-title">Practice Reports</h1><button class="action small primary" id="createTeacherBtn">+ Teacher</button></div>
+<div class="settings-card"><h3>Teacher report schedules</h3><p class="hint">Choose a teacher, which instruments to include, and a reporting week's last day (Saturday by default). A quick Yes / No / Maybe Later prompt appears the first time you open the app after a week ends.</p><div id="teacherList"></div></div>
+<h2 class="recent-title">Report history</h2><div id="reportHistory"></div><button class="action small" id="manualShareBtn">Prepare a report now</button>
+<div class="settings-card"><p class="hint"><strong>About sending:</strong> This browser-only app prepares an email in your device's email app. You still press Send there; afterward, confirm in this app that it was sent. It never marks an email “Sent” just because a draft opened. The metronome remains usable while reports are prepared.</p></div></div>
+<div class="page hidden" id="pageSettings"><h1 class="page-title">Settings</h1><div class="settings-card"><h3>Practice</h3><div class="setting-row"><label>Daily practice goal<small>Minutes per day</small></label><input id="dailyGoalInput" type="number" min="1" max="1440" step="1" value="60"></div><div class="setting-row"><label>Pause metronome with session<small>Pause All stops the clicks too</small></label><span class="switch"><input id="pauseMetToggle" type="checkbox" checked aria-label="Pause metronome with session"></span></div><div class="setting-row"><label>Countdown completion sound<small>Brief chime at the end of a timer</small></label><span class="switch"><input id="chimeToggle" type="checkbox" checked aria-label="Countdown completion sound"></span></div><div class="setting-row"><label>Completion chime volume<small>Separate from the metronome</small></label><input type="range" min="0" max="100" id="alertVolumeInput" value="60"></div><div class="setting-row"><label>Vibrate on completion<small>When supported by your device</small></label><span class="switch"><input id="vibrateToggle" type="checkbox" checked aria-label="Vibrate on timer finish"></span></div></div><div class="settings-card"><h3>Metronome</h3><div class="setting-row"><label>Click volume<small>Applies to the metronome and alerts</small></label><input type="range" min="0" max="100" id="volumeInput" value="65"></div><div class="setting-row"><label>Accent first beat<small>Stronger sound on beat one</small></label><span class="switch"><input id="accentToggle" type="checkbox" checked aria-label="Accent first beat"></span></div></div><div class="settings-card"><h3>Your data</h3><p class="hint">Your records stay in this browser on this device. They are not sent to a server. Make a backup if you switch devices or clear browser data.</p><div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px"><button class="action small" id="exportJson">Export backup</button><button class="action small" id="exportCsv">Export CSV</button><button class="action small" id="importButton">Import backup</button><input type="file" accept="application/json,.json" id="importFile" class="hidden"></div><div style="margin-top:18px"><button class="action small warn hidden" id="clearHistory">Delete practice history</button></div></div><div class="settings-card"><h3>Instruments</h3><p class="hint">Start with Piano, Organ, Violin and Guitar. Add, rename, reorder, or archive any instrument.</p><div id="manageInstrumentList"></div><button id="addInstrumentBtn" class="action small">+ Add instrument</button></div><div class="settings-card"><h3>Install &amp; offline use</h3><p class="hint">This app can work offline. To install it like a regular app, put the included app files on a secure HTTPS website, open that address, and use “Add to Home Screen” (iPhone/iPad) or “Install app” (Android/Chrome). A downloaded HTML file can also open in a browser, although saving may depend on the browser's file permissions.</p></div></div>
 </main></div>
-<div class="overlay hidden" id="dialogRoot" role="presentation"><div class="modal" id="dialogBox" role="dialog" aria-modal="true"></div></div><div class="drawer-back hidden" id="drawerBack"><div class="drawer"><h2>Practice Metronome</h2><button data-page="metronome">Metronome &amp; Timers</button><button data-page="records">Practice Record</button><button data-page="settings">Settings &amp; Backup</button><p class="hint" style="margin-top:18px">A focused practice companion with independent timers.</p></div></div><div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<div class="overlay hidden" id="dialogRoot" role="presentation"><div class="modal" id="dialogBox" role="dialog" aria-modal="true"></div></div><div class="drawer-back hidden" id="drawerBack"><div class="drawer"><h2>Practice Metronome</h2><button data-page="metronome">Metronome &amp; Timers</button><button data-page="records">Practice Record</button><button data-page="reports">Reports &amp; Teachers</button><button data-page="settings">Settings &amp; Backup</button><p class="hint" style="margin-top:18px">A focused practice companion with independent timers.</p></div></div><div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 <script>
 'use strict';
 const NS='practice_metronome_v1';
@@ -112,7 +169,325 @@ async function importJson(event){const file=event.target.files?.[0];if(!file)ret
 function bindEvents(){document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click',()=>navigate(btn.dataset.page)));$('menuBtn').onclick=()=>{$('drawerBack').classList.remove('hidden')};$('drawerBack').onclick=e=>{if(e.target.id==='drawerBack')$('drawerBack').classList.add('hidden')};$('drawerBack').querySelectorAll('[data-page]').forEach(btn=>btn.onclick=()=>navigate(btn.dataset.page));$('headerSettings').onclick=()=>navigate('settings');$('soundBtn').onclick=()=>{state.muted=!state.muted;persist();renderBpm();toast(state.muted?'Sound muted':'Sound on')};document.querySelectorAll('[data-bpm]').forEach(btn=>btn.onclick=()=>setBpm(state.bpm+Number(btn.dataset.bpm)));$('bpmSlider').oninput=e=>setBpm(e.target.value);$('bpmValue').onclick=()=>showDialog('Set tempo',`<label class="field">Beats per minute (30–240)<input type="number" id="newBpm" min="30" max="240" value="${state.bpm}"></label>`,[{label:'Cancel',fn:()=>{}},{label:'Set BPM',kind:'primary',fn:()=>setBpm($('newBpm').value)}]);$('beatsButton').onclick=()=>{state.beats=state.beats%12+1;persist();renderBpm();renderLamps();if(playing){clickIndex=0;}};$('subButton').onclick=()=>{state.subdivisions=state.subdivisions%4+1;persist();renderBpm();if(playing){clickIndex=0}};$('tapBtn').onclick=tapTempo;$('metPlay').onclick=()=>playing?stopMetronome():startMetronome();$('accentBtn').onclick=()=>{state.accent=!state.accent;persist();renderBpm()};$('wakeBtn').onclick=toggleWakeLock;$('pauseAllBtn').onclick=()=>!state.active?startSession():state.pausedAll?resumeAll():pauseAll();$('finishBtn').onclick=finishSession;
 $('timerCards').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;let id=Number(b.dataset.id);switch(b.dataset.act){case 'toggle':toggleTimer(id);break;case 'reset':resetTimer(id);break;case 'edit':editTimer(id);break;case 'remove':removeOptional(id);break;}});$('optionalCards').onclick=e=>{const b=e.target.closest('[data-act=add]');if(b)addOptional(Number(b.dataset.id))};$('timersHelp').onclick=()=>showDialog('Practice timers',`<p><strong>Timer 1</strong> is a 3-minute focus countdown, and <strong>Timer 2</strong> tracks your entire active practice time.</p><p>Timers 3 and 4 are optional and initially unnamed. You can rename all four timers and edit countdown durations.</p><p><strong>Pause All</strong> freezes the timers that are running; Resume All restarts only those timers. Finish &amp; save records the total practice time and completed focus intervals.</p><p>The metronome works independently of the timers except when the Pause All setting says to stop it.</p>`,[{label:'Got it',kind:'primary',fn:()=>{}}]);$('selectedDate').onchange=e=>{if(/^\d{4}-\d{2}-\d{2}$/.test(e.target.value)){selectedDate=e.target.value;renderRecords()}};$('prevDate').onclick=()=>{const d=dateFromKey(selectedDate);d.setDate(d.getDate()-1);selectedDate=localDateKey(d);renderRecords()};$('nextDate').onclick=()=>{const d=dateFromKey(selectedDate);d.setDate(d.getDate()+1);selectedDate=localDateKey(d);renderRecords()};$('todayDate').onclick=()=>{selectedDate=localDateKey(now());renderRecords()};$('weekBars').onclick=e=>{const b=e.target.closest('[data-day]');if(b){selectedDate=b.dataset.day;renderRecords()}};$('recordList').onclick=e=>{const b=e.target.closest('[data-record]');if(b)editRecord(b.dataset.record)};
 $('dailyGoalInput').onchange=e=>{state.dailyGoal=Math.max(1,Math.min(1440,Math.round(Number(e.target.value)||60)));persist();renderSettings()};$('pauseMetToggle').onchange=e=>{state.pauseMet=e.target.checked;persist()};$('chimeToggle').onchange=e=>{state.chime=e.target.checked;persist()};$('vibrateToggle').onchange=e=>{state.vibrate=e.target.checked;persist()};$('volumeInput').oninput=e=>{state.volume=Number(e.target.value)/100;persist()};$('alertVolumeInput').oninput=e=>{state.alertVolume=Number(e.target.value)/100;persist()};$('accentToggle').onchange=e=>{state.accent=e.target.checked;persist();renderBpm()};$('exportJson').onclick=exportJson;$('exportCsv').onclick=exportCsv;$('importButton').onclick=()=>$('importFile').click();$('importFile').onchange=importJson;$('clearHistory').onclick=()=>showDialog('Delete all practice records?',`<p>This permanently removes all <strong>${state.records.length}</strong> saved sessions from this device. Export a backup first if you want to keep them.</p>`,[{label:'Cancel',fn:()=>{}},{label:'Delete history',kind:'warn',fn:()=>{state.records=[];persist();renderRecords();toast('Practice history deleted')}}]);$('dialogRoot').addEventListener('click',e=>{if(e.target.id==='dialogRoot')closeDialog()});document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDialog();$('drawerBack').classList.add('hidden')}});window.addEventListener('pagehide',persist);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkTick();persist()});}
-bindEvents();renderBpm();renderLamps();renderTimers();renderSettings();renderRecords();setInterval(checkTick,190);setInterval(persist,5000);
+// Practice Metronome v2: instrument-aware practice and weekly teacher reports.
+// Retains the existing v1 localStorage key so earlier practice history is not lost.
+let selectedInstrumentFilter='all';
+let openingReportPromptShown=false;
+let userHasTouchedMetronome=false;
+let chosenShareRecords=[];
+const DEFAULT_INSTRUMENTS=[{id:'piano',name:'Piano',archived:false},{id:'organ',name:'Organ',archived:false},{id:'violin',name:'Violin',archived:false},{id:'guitar',name:'Guitar',archived:false}];
+function randomId(prefix){return prefix+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,9)}
+function initializeDataV2(){
+  if(!Array.isArray(state.instruments)||!state.instruments.length)state.instruments=DEFAULT_INSTRUMENTS.map(x=>({...x}));
+  if(!state.currentInstrument||!state.instruments.some(x=>x.id===state.currentInstrument&&!x.archived))state.currentInstrument=state.instruments.find(x=>!x.archived)?.id||'piano';
+  state.reportLog=Array.isArray(state.reportLog)?state.reportLog:[];
+  state.teachers=Array.isArray(state.teachers)?state.teachers:[];
+  state.meterUnit=Number(state.meterUnit)||4;
+  state.records.forEach(r=>{if(!r.instrumentId){const match=state.instruments.find(i=>(r.title||'').toLowerCase().includes(i.name.toLowerCase()));r.instrumentId=match?.id||'unassigned';}});
+  persist();
+}
+initializeDataV2();
+function instrumentName(id){return state.instruments.find(i=>i.id===id)?.name||'Unassigned'}
+function activeInstruments(){return state.instruments.filter(x=>!x.archived)}
+function refreshInstrumentSelect(){
+  const sel=$('instrumentSelect');if(!sel)return;
+  sel.innerHTML=activeInstruments().map(i=>`<option value="${esc(i.id)}">♫ ${esc(i.name)}</option>`).join('')+'<option value="__manage__">＋ Manage instruments…</option>';
+  sel.value=state.currentInstrument;
+  $('recordInstrumentFilter').innerHTML='<option value="all">All instruments</option>'+state.instruments.map(i=>`<option value="${esc(i.id)}">${esc(i.name)}${i.archived?' (archived)':''}</option>`).join('')+'<option value="unassigned">Unassigned (older records)</option>';
+  $('recordInstrumentFilter').value=selectedInstrumentFilter;
+}
+function chooseInstrument(newId){
+  if(newId==='__manage__'){refreshInstrumentSelect();navigate('settings');setTimeout(()=>$('manageInstrumentList').scrollIntoView({behavior:'smooth',block:'center'}),0);return;}
+  if(newId===state.currentInstrument)return;
+  const inst=state.instruments.find(i=>i.id===newId&&!i.archived);if(!inst){refreshInstrumentSelect();return;}
+  if(!state.active){state.currentInstrument=newId;persist();refreshInstrumentSelect();renderTimers();return;}
+  const old=instrumentName(state.currentInstrument),time=fmtClock(displayMs(tBy(2)),true);
+  showDialog(`Switch to ${inst.name}?`,`<p>Your <strong>${esc(old)}</strong> practice (${time}) will be saved automatically first. No practice is discarded.</p>`,[
+    {label:`Keep ${old}`,fn:()=>{refreshInstrumentSelect()}},
+    {label:`Save & switch`,kind:'primary',fn:()=>{saveSessionV2(false);state.currentInstrument=newId;persist();refreshInstrumentSelect();toast(`${old} saved · Now ${inst.name}`)}}
+  ]);
+  refreshInstrumentSelect();
+}
+function saveSessionV2(visitRecords=false){
+  if(!state.active)return false;
+  state.timers.forEach(snapshot);
+  const duration=Math.round(tBy(2).elapsedMs),focus=state.focusCount;
+  state.records.unshift({id:randomId('session'),date:new Date().toISOString(),startedAt:state.sessionStarted||new Date().toISOString(),durationMs:Math.max(0,duration),focus,pauses:state.pausedCount,title:instrumentName(state.currentInstrument)+' practice',notes:'',instrumentId:state.currentInstrument});
+  state.records.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  newSessionState();persist();renderTimers();renderReportStatus();
+  if(visitRecords)navigate('records');
+  return true;
+}
+function finishSession(){if(saveSessionV2(false))toast(`${instrumentName(state.currentInstrument)} practice saved. Edit notes in Practice Record.`)}
+function renderTimers(){
+  const cont=$('timerCards'),opt=$('optionalCards');cont.innerHTML='';opt.innerHTML='';
+  for(const t of state.timers.filter(t=>t.enabled)){
+    const card=document.createElement('div');card.className='timer-card';
+    const stat=state.pausedAll&&(t.running||state.resumeSet.includes(t.id))?'Paused':t.running?'Running':(t.kind==='countdown'&&displayMs(t)===0?'Done':(t.kind==='stopwatch'&&displayMs(t)>0?'Paused':'Ready'));
+    card.innerHTML=`<div class="timer-main"><div class="timer-top"><span class="timer-title">${esc(t.name||'Timer '+t.id)}</span><button class="edit-timer" data-act="edit" data-id="${t.id}" aria-label="Rename timer ${t.id}">${icons.pencil}</button></div><div class="timer-sub">${t.id===1?'Focus':t.id===2?'Total practice':t.name?'Countdown':'Optional countdown'}</div></div>
+    <div class="timer-card-foot"><button class="timer-time time-press" data-act="${t.kind==='countdown'?'edit':'noop'}" data-id="${t.id}" id="timerTime${t.id}" aria-label="${t.kind==='countdown'?'Edit duration':'Total time'}">${displayTimer(t)}</button><div class="timer-buttons"><button class="timer-icon" data-act="toggle" data-id="${t.id}" aria-label="${t.running?'Pause':'Start'} timer ${t.id}">${t.running?icons.pause:icons.play}</button>${t.id>2?`<button class="edit-timer" data-act="remove" data-id="${t.id}" aria-label="Hide timer ${t.id}">×</button>`:''}</div></div>
+    <div class="timer-state ${t.running?'running':state.pausedAll?'paused':''}" id="timerState${t.id}">${stat}${t.id===1&&state.focusCount?' · '+state.focusCount+' completed':''}</div>`;
+    cont.appendChild(card);
+  }
+  for(const t of state.timers.filter(t=>!t.enabled)){
+    const b=document.createElement('button');b.className='optional-btn';b.dataset.act='add';b.dataset.id=t.id;b.innerHTML=`＋ Timer ${t.id}<div class="optional-sub">Optional</div>`;opt.appendChild(b);
+  }
+  $('sessionState').textContent=state.pausedAll?'Session paused':state.active?'In progress':'Ready';
+  $('pauseAllBtn').textContent=state.pausedAll?'▶ Resume All':state.active?'Ⅱ Pause All':'▶ Start session';
+  $('finishBtn').disabled=!state.active;
+}
+function renderBpm(){
+  const b=state.bpm;$('bpmValue').textContent=b;$('prevBpm').textContent=b-1;$('nextBpm').textContent=b+1;
+  $('bpmSlider').value=b;$('bpmSlider').style.setProperty('--percent',`${(b-30)/210*100}%`);
+  $('bpmName').textContent=b<60?'Largo':b<76?'Adagio':b<108?'Andante':b<120?'Moderato':b<168?'Allegro':b<200?'Presto':'Prestissimo';
+  $('beatsButton').textContent=`${state.beats}/${state.meterUnit}`;$('subButton').textContent=state.subdivisions;
+  $('soundBtn').innerHTML=state.muted?icons.mute:icons.sound;$('accentBtn').innerHTML=state.accent?'●':'○';
+  $('accentBtn').title=state.accent?'Accent on':'Accent off';$('metPlay').innerHTML=playing?icons.stop:icons.play;
+  $('metPlay').setAttribute('aria-label',playing?'Stop metronome':'Start metronome');$('wakeBtn').innerHTML=wakeLock?icons.sun:icons.sunoff;
+}
+function editTimeSignature(){
+  const times=['2/4','3/4','4/4','5/4','6/8','9/8','12/8','2/2','3/8'];
+  showDialog('Time signature',`<div class="choices">${times.map(t=>`<label class="choice"><input type="radio" name="meterChoice" value="${t}" ${`${state.beats}/${state.meterUnit}`===t?'checked':''}>${t}</label>`).join('')}</div><p class="hint">The metronome clicks each notated beat, with a stronger first beat when Accent is enabled. Set Clicks/beat separately.</p>`,[
+    {label:'Cancel',fn:()=>{}},{label:'Apply',kind:'primary',fn:()=>{const v=document.querySelector('input[name=meterChoice]:checked')?.value||'4/4';const [n,d]=v.split('/').map(Number);state.beats=n;state.meterUnit=d;persist();renderLamps();renderBpm();if(playing)clickIndex=0;}}
+  ]);
+}
+function filteredRecordsFor(key){return recordsFor(key).filter(r=>selectedInstrumentFilter==='all'||(r.instrumentId||'unassigned')===selectedInstrumentFilter)}
+function renderRecords(){
+  const recs=filteredRecordsFor(selectedDate),sum=recs.reduce((a,r)=>a+r.durationMs,0),focus=recs.reduce((a,r)=>a+(r.focus||0),0);
+  $('selectedDate').value=selectedDate;$('summaryDate').textContent=fmtLongDate(selectedDate);
+  $('summaryTime').textContent=fmtClock(sum);$('summaryFocus').textContent=focus;$('summarySessions').textContent=recs.length;
+  $('goalMinutes').textContent=`${state.dailyGoal} min`;const pct=Math.round(100*sum/(state.dailyGoal*60000));$('goalPercent').textContent=`${pct}%`;
+  $('goalRing').style.setProperty('--progress',Math.min(100,Math.max(0,pct)));
+  const keys=weekDates(selectedDate),sums=keys.map(k=>filteredRecordsFor(k).reduce((a,r)=>a+r.durationMs,0)),max=Math.max(...sums,60000),total=sums.reduce((a,b)=>a+b,0);
+  $('weekTotal').textContent=`Total ${fmtMinutes(total)}`;
+  $('weekBars').innerHTML=keys.map((k,i)=>`<button class="week-day ${k===selectedDate?'selected':''}" data-day="${k}" aria-label="See ${fmtLongDate(k)}"><div class="week-bar" style="height:${Math.max(3,sums[i]/max*80)}px"></div><span class="day-text">${dateFromKey(k).toLocaleDateString(undefined,{weekday:'short'})}</span><small>${Math.round(sums[i]/60000)}m</small></button>`).join('');
+  $('recentTitle').textContent=selectedDate===localDateKey(now())?'Today’s Sessions':`Sessions · ${dateFromKey(selectedDate).toLocaleDateString(undefined,{month:'short',day:'numeric'})}`;
+  $('recordList').innerHTML=recs.length?recs.map(r=>`<article class="record-card"><button class="record-click" data-record="${esc(r.id)}"><div class="record-card-head"><div><div class="record-title">${esc(instrumentName(r.instrumentId))} · ${esc(r.title||'Practice')}</div><div class="record-sub">${new Date(r.date).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}</div></div><span aria-hidden="true">›</span></div><div class="record-metrics"><span>◷ ${fmtClock(r.durationMs,true)}</span><span style="color:#71dce3">◎ ${Number(r.focus)||0} intervals</span></div>${r.notes?`<div class="record-notes">${esc(r.notes)}</div>`:''}</button></article>`).join(''):'<div class="empty-records">No saved sessions for this date and instrument.</div>';
+}
+function editRecord(id){
+  const r=state.records.find(x=>x.id===id);if(!r)return;
+  const option=state.instruments.map(i=>`<option value="${esc(i.id)}" ${i.id===r.instrumentId?'selected':''}>${esc(i.name)}</option>`).join('');
+  showDialog('Practice session',`<div class="session-details"><div><strong>${fmtClock(r.durationMs,true)}</strong><span>Practice time</span></div><div><strong>${Number(r.focus)||0}</strong><span>Focus intervals</span></div></div><p class="hint">${esc(new Date(r.date).toLocaleString())} · Paused ${Number(r.pauses)||0} time(s)</p><label class="field">Instrument<select id="editRecordInstrument">${option}<option value="unassigned" ${r.instrumentId==='unassigned'?'selected':''}>Unassigned</option></select></label><label class="field">Practice label<input id="recordTitle" maxlength="80" value="${esc(r.title||'Practice')}"></label><label class="field">Notes<textarea id="recordNotes" maxlength="1200">${esc(r.notes||'')}</textarea></label>`,[
+    {label:'Delete',kind:'warn',keep:true,fn:()=>showDialog('Delete this practice session?',`<p>Are you sure you want to delete <strong>${esc(instrumentName(r.instrumentId))}</strong> practice from ${esc(new Date(r.date).toLocaleDateString())} (${fmtClock(r.durationMs,true)})?</p><p class="hint">Saved report snapshots stay unchanged. This action only affects your practice history.</p>`,[
+      {label:'Cancel',fn:()=>{}},{label:'Yes, delete',kind:'warn',fn:()=>{state.records=state.records.filter(x=>x.id!==id);persist();renderRecords();toast('Practice record deleted')}}])},
+    {label:'Cancel',fn:()=>{}},
+    {label:'Save changes',kind:'primary',fn:()=>{r.instrumentId=$('editRecordInstrument').value;r.title=$('recordTitle').value.trim()||'Practice';r.notes=$('recordNotes').value.trim();persist();renderRecords();toast('Practice record saved')}}
+  ]);
+}
+function navigate(page){
+  if(!['metronome','records','reports','settings'].includes(page))return;view=page;
+  for(const key of ['metronome','records','reports','settings']){
+    $(`page${key==='metronome'?'Metronome':key==='records'?'Records':key==='reports'?'Reports':'Settings'}`).classList.toggle('hidden',page!==key);
+    const b=document.querySelector(`.tab[data-page="${key}"]`);if(b)b.setAttribute('aria-selected',String(page===key));
+  }
+  $('headerTitle').textContent=page==='metronome'?'Metronome':page==='records'?'Practice Record':page==='reports'?'Practice Reports':'Settings';
+  $('drawerBack').classList.add('hidden');if(page==='records')renderRecords();if(page==='reports')renderReports();if(page==='settings'){renderSettings();renderInstrumentManager()}
+  window.scrollTo({top:0,behavior:'instant'});
+}
+function renderInstrumentManager(){
+  $('manageInstrumentList').innerHTML=state.instruments.map((i,index)=>`<div class="instrument-management"><span>${esc(i.name)}${i.archived?' (hidden)':''}</span><button class="action small" data-instrument-action="rename" data-instrument-id="${esc(i.id)}">Rename</button><button class="action small" data-instrument-action="${i.archived?'restore':'archive'}" data-instrument-id="${esc(i.id)}">${i.archived?'Show':'Hide'}</button><button class="action small" data-instrument-action="up" data-instrument-id="${esc(i.id)}" ${index===0?'disabled':''}>↑</button></div>`).join('');
+}
+function handleInstrumentManage(e){
+  const b=e.target.closest('[data-instrument-action]');if(!b)return;const inst=state.instruments.find(x=>x.id===b.dataset.instrumentId);if(!inst)return;
+  switch(b.dataset.instrumentAction){
+    case 'rename':showDialog('Rename instrument',`<label class="field">Instrument name<input id="renameInstrumentValue" maxlength="35" value="${esc(inst.name)}"></label>`,[{label:'Cancel',fn:()=>{}},{label:'Save',kind:'primary',fn:()=>{const name=$('renameInstrumentValue').value.trim();if(name){inst.name=name;persist();renderInstrumentManager();refreshInstrumentSelect();renderRecords()}}}]);break;
+    case 'archive':if(activeInstruments().length===1){toast('Keep at least one active instrument');return}if(inst.id===state.currentInstrument&&state.active){toast('Finish or switch this practice session first');return}inst.archived=true;if(state.currentInstrument===inst.id)state.currentInstrument=activeInstruments()[0].id;break;
+    case 'restore':inst.archived=false;break;
+    case 'up':{const index=state.instruments.indexOf(inst);if(index>0)[state.instruments[index-1],state.instruments[index]]=[state.instruments[index],state.instruments[index-1]];break;}
+  }
+  persist();renderInstrumentManager();refreshInstrumentSelect();renderRecords();
+}
+function addInstrument(){showDialog('Add instrument',`<label class="field">Instrument name<input id="newInstrumentName" maxlength="35" placeholder="e.g. Voice"></label>`,[{label:'Cancel',fn:()=>{}},{label:'Add',kind:'primary',keep:true,fn:()=>{const name=$('newInstrumentName').value.trim();if(!name){toast('Enter a name');return}state.instruments.push({id:randomId('instrument'),name,archived:false});persist();renderInstrumentManager();refreshInstrumentSelect();closeDialog();toast('Instrument added')}}]);}
+function weekEndBeforeOrOn(date,cutoff=6){
+  const d=new Date(date);d.setHours(12,0,0,0);const diff=(d.getDay()-cutoff+7)%7;d.setDate(d.getDate()-diff);return localDateKey(d);
+}
+function shiftDay(key,n){const d=dateFromKey(key);d.setDate(d.getDate()+n);return localDateKey(d)}
+function priorClosedWeekEnd(cutoff=6){const today=new Date(),end=weekEndBeforeOrOn(today,cutoff);return end===localDateKey(today)?shiftDay(end,-7):end}
+function dateInRange(date,start,end){const k=localDateKey(new Date(date).getTime());return k>=start&&k<=end}
+function snapshotReport(teacher,start,end,source='scheduled'){
+  const selected=teacher.instruments.filter(id=>state.instruments.some(i=>i.id===id));
+  const records=state.records.filter(r=>selected.includes(r.instrumentId)&&dateInRange(r.date,start,end)).map(r=>({id:r.id,instrumentId:r.instrumentId,instrumentName:instrumentName(r.instrumentId),date:r.date,durationMs:r.durationMs,focus:r.focus||0,title:r.title||'Practice',notes:r.notes||''})).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  return {id:randomId('report'),teacherId:teacher.id,teacherName:teacher.name,recipient:teacher.email,instruments:selected.map(id=>({id,name:instrumentName(id)})),periodStart:start,periodEnd:end,records,source,status:'later',createdAt:new Date().toISOString(),actionAt:null,sentAt:null};
+}
+function makeDueReports(){
+  for(const t of state.teachers.filter(x=>x.enabled!==false)){
+    let cursor=t.lastProcessedEnd||priorClosedWeekEnd(t.cutoff??6),last=priorClosedWeekEnd(t.cutoff??6),limit=0;
+    while(cursor<last&&limit++<52){const end=shiftDay(cursor,7),start=shiftDay(end,-6);
+      if(!state.reportLog.some(r=>r.teacherId===t.id&&r.periodEnd===end&&r.source==='scheduled'))state.reportLog.push(snapshotReport(t,start,end));
+      cursor=end;
+    }
+    t.lastProcessedEnd=cursor;
+  }
+  persist();renderReportStatus();
+}
+function sortedReportLog(){return [...state.reportLog].sort((a,b)=>b.periodEnd.localeCompare(a.periodEnd)||new Date(b.createdAt)-new Date(a.createdAt))}
+function renderReportStatus(){
+  const el=$('reportStatus');if(!el)return;const reports=sortedReportLog();
+  if(!reports.length){el.classList.add('hidden');return}
+  el.classList.remove('hidden');const r=reports[0],dt=r.sentAt||r.actionAt;
+  const status=r.status==='sent'?`✓ Sent ${new Date(r.sentAt).toLocaleDateString()}`:r.status==='skipped'?`↶ Skipped ${dt?new Date(dt).toLocaleDateString():''}`:r.status==='prepared'?'✉ Email prepared — confirm sending':'◷ Report ready';
+  el.innerHTML=`<span><strong>${esc(status)}</strong><div class="status-detail">${esc(r.teacherName)} · ${esc(r.instruments.map(x=>x.name).join(' + '))} · through ${esc(r.periodEnd)}</div></span><span>›</span>`;
+}
+function reportTotal(r){return r.records.reduce((n,x)=>n+x.durationMs,0)}
+function reportText(r){
+  const lines=[`Practice report: ${r.teacherName}`,`Period: ${r.periodStart} through ${r.periodEnd}`,`Instruments: ${r.instruments.map(x=>x.name).join(', ')||'None'}`,''];
+  for(const inst of r.instruments){const entries=r.records.filter(x=>x.instrumentId===inst.id);const sum=entries.reduce((n,x)=>n+x.durationMs,0);lines.push(`${inst.name}: ${fmtMinutes(sum)} (${entries.length} session${entries.length===1?'':'s'})`)}
+  lines.push('',`Total for selected instruments: ${fmtMinutes(reportTotal(r))}`,'','Sessions:');
+  for(const x of r.records)lines.push(`${localDateKey(new Date(x.date).getTime())} | ${x.instrumentName} | ${fmtClock(x.durationMs,true)} | ${x.focus} focus intervals${x.notes?' | '+x.notes.replace(/\s+/g,' ').slice(0,300):''}`);
+  if(!r.records.length)lines.push('(No practice sessions for these instruments in this period)');
+  lines.push('',`Report generated: ${new Date(r.createdAt).toLocaleString()}`);
+  if(r.sentAt)lines.push(`Recorded as sent: ${new Date(r.sentAt).toLocaleString()}`);
+  return lines.join('\n');
+}
+function reportTitle(r){return `Practice report: ${r.instruments.map(x=>x.name).join(' + ')} (${r.periodStart} to ${r.periodEnd})`}
+function reportPreview(r){
+  const title=reportTitle(r);
+  const body=reportText(r);
+  showDialog('Practice report',`<p class="hint">${esc(r.recipient)} · ${esc(r.teacherName)} · ${esc(r.periodStart)} to ${esc(r.periodEnd)}</p><pre style="white-space:pre-wrap;max-height:45vh;overflow:auto;background:#1c2627;padding:10px;border-radius:8px;font-size:12px">${esc(body)}</pre>`,[
+    {label:'Close',fn:()=>{}},{label:'Print / PDF',keep:true,fn:()=>{printReport(r);closeDialog()}},{label:'Email report',kind:'primary',keep:true,fn:()=>{closeDialog();prepareEmail(r)}}
+  ]);
+}
+function printReport(r){
+  let p=$('printReport');if(!p){p=document.createElement('div');p.id='printReport';document.body.appendChild(p)}
+  p.innerHTML=`<h1>${esc(reportTitle(r))}</h1><p>To: ${esc(r.teacherName)} (${esc(r.recipient)})</p><p>Selected instruments: ${esc(r.instruments.map(i=>i.name).join(', '))}</p><p>Total practice: ${esc(fmtMinutes(reportTotal(r)))}</p><pre style="font:12px/1.6 Arial;white-space:pre-wrap">${esc(reportText(r))}</pre>`;
+  window.print();
+}
+function markReport(r,status){r.status=status;r.actionAt=new Date().toISOString();if(status==='sent')r.sentAt=r.actionAt;persist();renderReports();renderReportStatus()}
+function prepareEmail(r){
+  if(!r.recipient||!/^\S+@\S+\.\S+$/.test(r.recipient)){toast('Add a valid teacher email first');return}
+  markReport(r,'prepared');
+  const mailto=`mailto:${encodeURIComponent(r.recipient)}?subject=${encodeURIComponent(reportTitle(r))}&body=${encodeURIComponent(reportText(r))}`;
+  // Opening an external composer does not prove the email was sent.
+  // We never mark the report "sent" until the user confirms it.
+  try{const link=document.createElement('a');link.href=mailto;link.target='_blank';link.rel='noopener';document.body.appendChild(link);link.click();link.remove()}catch(e){toast('Could not open email app; use Share/Export')}
+  showDialog('Email opened',`<p>The report was prepared for <strong>${esc(r.recipient)}</strong>.</p><p><strong>Did you press Send in your email app?</strong></p><p class="hint">We cannot verify email delivery from this browser app. Choosing “Yes, I sent it” records the date locally.</p>`,[
+    {label:'Not yet',fn:()=>{}},{label:'Yes, I sent it',kind:'primary',fn:()=>{markReport(r,'sent');toast('Report marked as sent')}}
+  ]);
+}
+function reportActions(r){
+  const sent=r.status==='sent';
+  return `<div class="report-actions"><button class="action small" data-report-act="view" data-report-id="${esc(r.id)}">View</button>${!sent?`<button class="action small primary" data-report-act="email" data-report-id="${esc(r.id)}">${r.status==='prepared'?'Open email again':'Send now'}</button>`:''}${r.status==='prepared'?`<button class="action small" data-report-act="confirm" data-report-id="${esc(r.id)}">I sent it</button>`:''}</div>`;
+}
+function renderReports(){
+  $('teacherList').innerHTML=state.teachers.length?state.teachers.map(t=>`<div class="report-card"><div class="report-line"><h3>${esc(t.name)}</h3><button class="action small" data-teacher-action="edit" data-teacher-id="${esc(t.id)}">Edit</button></div><div class="report-meta">${esc(t.email)}<br>${esc(t.instruments.map(instrumentName).join(' + '))}<br>Week ends ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][t.cutoff??6]} · ${t.enabled===false?'Off':'On'}</div></div>`).join(''):'<p class="hint">No teachers configured. Add a teacher to get weekly reminders.</p>';
+  $('reportHistory').innerHTML=state.reportLog.length?sortedReportLog().map(r=>`<div class="report-card"><div class="report-line"><h3>${esc(r.teacherName)}</h3><strong>${esc(r.status==='sent'?'Sent':r.status==='skipped'?'Skipped':r.status==='prepared'?'Email prepared':'Pending')}</strong></div><div class="report-meta">${esc(r.periodStart)} – ${esc(r.periodEnd)} · ${esc(r.instruments.map(x=>x.name).join(' + '))}<br>${r.status==='sent'&&r.sentAt?`Sent: ${esc(new Date(r.sentAt).toLocaleString())}`:r.status==='skipped'&&r.actionAt?`Skipped: ${esc(new Date(r.actionAt).toLocaleString())}`:r.status==='prepared'?'Email opened; awaiting confirmation':'Not sent yet'}</div>${reportActions(r)}</div>`).join(''):'<p class="hint">Sent and skipped reports will appear here, with their dates and the original instrument selection.</p>';
+}
+function teacherEditor(id){
+  const existing=state.teachers.find(t=>t.id===id)||null;
+  const selected=existing?.instruments||[state.currentInstrument];
+  const checks=state.instruments.filter(x=>!x.archived||selected.includes(x.id)).map(x=>`<label class="field-checkbox"><input type="checkbox" name="teacherInstrument" value="${esc(x.id)}" ${selected.includes(x.id)?'checked':''}> ${esc(x.name)}</label>`).join('');
+  showDialog(existing?'Edit teacher report':'Add teacher',`<label class="field">Teacher name<input id="teacherName" maxlength="70" value="${esc(existing?.name||'')}"></label><label class="field">Email address<input id="teacherEmail" type="email" value="${esc(existing?.email||'')}"></label><p class="hint">Only checked instruments are included in this teacher's reports.</p><div class="share-columns">${checks}</div><label class="field">Last day of practice week<select id="teacherCutoff">${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map((s,i)=>`<option value="${i}" ${(existing?.cutoff??6)===i?'selected':''}>${s}</option>`).join('')}</select></label><label class="field-checkbox"><input id="teacherEnabled" type="checkbox" ${existing?.enabled===false?'':'checked'}> Show weekly report reminders</label>`,[
+    {label:'Cancel',fn:()=>{}},{label:'Save teacher',kind:'primary',keep:true,fn:()=>{
+      const name=$('teacherName').value.trim(),email=$('teacherEmail').value.trim(),inst=[...document.querySelectorAll('input[name=teacherInstrument]:checked')].map(x=>x.value);
+      if(!name||!/^\S+@\S+\.\S+$/.test(email)||!inst.length){toast('Enter a name, valid email and at least one instrument');return}
+      const cutoff=Number($('teacherCutoff').value),enabled=$('teacherEnabled').checked;
+      if(existing){Object.assign(existing,{name,email,instruments:inst,cutoff,enabled})}else{state.teachers.push({id:randomId('teacher'),name,email,instruments:inst,cutoff,enabled,lastProcessedEnd:priorClosedWeekEnd(cutoff)})}
+      persist();renderReports();closeDialog();toast('Teacher report settings saved');
+    }}
+  ]);
+}
+function chooseReport(r){
+  showDialog(`${r.teacherName}: ${r.status==='sent'?'Sent':r.status==='skipped'?'Skipped':r.status==='prepared'?'Prepared':'Pending'} report`,`<p>${esc(r.periodStart)} – ${esc(r.periodEnd)}</p><p>Instruments: <strong>${esc(r.instruments.map(i=>i.name).join(', '))}</strong></p><p>Total practice: <strong>${fmtMinutes(reportTotal(r))}</strong></p>${r.sentAt?`<p>Recorded sent ${esc(new Date(r.sentAt).toLocaleString())}</p>`:''}`,[
+    {label:'Close',fn:()=>{}},{label:'View report',keep:true,fn:()=>reportPreview(r)},...r.status==='sent'?[]:[{label:r.status==='prepared'?'Open email again':'Send now',kind:'primary',keep:true,fn:()=>{closeDialog();prepareEmail(r)}}]
+  ]);
+}
+function reportPromptOnOpen(){
+  if(openingReportPromptShown||userHasTouchedMetronome||dialogOpened||view!=='metronome')return;
+  const due=state.reportLog.find(r=>r.source==='scheduled'&&(r.status==='later'||r.status==='prepared'));
+  if(!due)return;
+  openingReportPromptShown=true;
+  if(due.status==='prepared'){
+    showDialog('Did you send this report?',`<p>For ${esc(due.teacherName)} · ${esc(due.periodStart)} to ${esc(due.periodEnd)}.</p><p class="hint">An email draft was prepared previously. Confirm only if you actually sent it.</p>`,[
+      {label:'Maybe later',fn:()=>{}},{label:'Open email again',keep:true,fn:()=>{closeDialog();prepareEmail(due)}},{label:'Yes, I sent it',kind:'primary',fn:()=>markReport(due,'sent')}
+    ]);return;
+  }
+  showDialog('Send practice report?',`<p>Your configured weekly report is ready.</p><div class="report-card"><strong>${esc(due.teacherName)}</strong><div class="report-meta">${esc(due.recipient)}<br>${esc(due.instruments.map(x=>x.name).join(' + '))}<br>${esc(due.periodStart)} – ${esc(due.periodEnd)}</div></div><p class="hint">The metronome is ready. You can dismiss this in one tap.</p>`,[
+    {label:'No',fn:()=>{markReport(due,'skipped');toast('Report skipped — you can send it later from Report History')}},
+    {label:'Maybe later',fn:()=>{markReport(due,'later');toast('Will ask next time you open the app')}},
+    {label:'Yes',kind:'primary',keep:true,fn:()=>{closeDialog();prepareEmail(due)}}
+  ]);
+}
+function manualShare(){
+  const active=state.instruments.filter(i=>!i.archived||state.records.some(r=>r.instrumentId===i.id));
+  const dates=weekDates(localDateKey(now())),start=dates[0],end=localDateKey(now());
+  showDialog('Share practice records',`<label class="field">Send to teacher<select id="shareTeacher">${state.teachers.map(t=>`<option value="${esc(t.id)}">${esc(t.name)} — ${esc(t.email)}</option>`).join('')}<option value="manual">Other email address…</option></select></label><label class="field">Email (editable)<input type="email" id="shareEmail" value="${esc(state.teachers[0]?.email||'')}"></label><p class="hint">Choose only the instruments you want to share.</p><div class="share-columns">${active.map(i=>`<label class="field-checkbox"><input type="checkbox" name="shareInstrument" value="${esc(i.id)}" ${selectedInstrumentFilter==='all'||selectedInstrumentFilter===i.id?'checked':''}> ${esc(i.name)}</label>`).join('')}</div><div class="share-columns"><label class="field">From<input id="shareFrom" type="date" value="${start}"></label><label class="field">Through<input id="shareTo" type="date" value="${end}"></label></div><label class="field-checkbox"><input type="checkbox" id="shareSelectRecords"> Select individual sessions after choosing dates</label>`,[
+    {label:'Cancel',fn:()=>{}},{label:'Continue',kind:'primary',keep:true,fn:()=>{
+      const recipient=$('shareEmail').value.trim(),ids=[...document.querySelectorAll('input[name=shareInstrument]:checked')].map(x=>x.value),from=$('shareFrom').value,to=$('shareTo').value,selected=$('shareSelectRecords').checked;
+      if(!/^\S+@\S+\.\S+$/.test(recipient)||!ids.length||!from||!to||from>to){toast('Choose valid dates, at least one instrument and an email');return}
+      const t=state.teachers.find(x=>x.id===$('shareTeacher').value);
+      let r=snapshotReport({id:t?.id||'manual',name:t?.name||'Teacher',email:recipient,instruments:ids},from,to,'manual');r.recipient=recipient;
+      closeDialog();if(selected)selectReportSessions(r);else manualShareReady(r);
+    }}
+  ]);
+  $('shareTeacher').onchange=e=>{const t=state.teachers.find(x=>x.id===e.target.value);if(t)$('shareEmail').value=t.email};
+  $('shareTeacher').value=state.teachers[0]?.id||'manual';
+}
+function selectReportSessions(r){
+  showDialog('Choose sessions',`<p class="hint">Only the checked sessions will be included. Other instruments remain private.</p><div style="max-height:50vh;overflow:auto">${r.records.map(x=>`<label class="field-checkbox"><input type="checkbox" name="selectedSession" value="${esc(x.id)}" checked> ${esc(x.instrumentName)} · ${esc(localDateKey(new Date(x.date).getTime()))} · ${fmtClock(x.durationMs,true)}</label>`).join('')||'<p>No sessions found for this selection.</p>'}</div>`,[
+    {label:'Back',keep:true,fn:()=>{closeDialog();manualShare()}},{label:'Continue',kind:'primary',keep:true,fn:()=>{const ids=new Set([...document.querySelectorAll('input[name=selectedSession]:checked')].map(x=>x.value));r.records=r.records.filter(x=>ids.has(x.id));closeDialog();manualShareReady(r)}}
+  ]);
+}
+function manualShareReady(r){
+  showDialog('Ready to share',`<p>To: ${esc(r.recipient)}</p><p>${esc(r.instruments.map(x=>x.name).join(' + '))} · ${esc(r.periodStart)} – ${esc(r.periodEnd)}</p><p>Selected total: <strong>${fmtMinutes(reportTotal(r))}</strong> · ${r.records.length} session(s)</p>`,[
+    {label:'Cancel',fn:()=>{}},{label:'Print / PDF',keep:true,fn:()=>{printReport(r);closeDialog()}},{label:'Prepare email',kind:'primary',keep:true,fn:()=>{state.reportLog.unshift(r);persist();closeDialog();prepareEmail(r)}}
+  ]);
+}
+function renderSettings(){
+  $('dailyGoalInput').value=state.dailyGoal;$('pauseMetToggle').checked=state.pauseMet;$('chimeToggle').checked=state.chime;
+  $('vibrateToggle').checked=state.vibrate;$('volumeInput').value=Math.round(state.volume*100);$('alertVolumeInput').value=Math.round(state.alertVolume*100);$('accentToggle').checked=state.accent;
+}
+function exportJson(){
+  const data={format:'PracticeMetronomeBackup',version:2,exportedAt:new Date().toISOString(),records:state.records,instruments:state.instruments,currentInstrument:state.currentInstrument,teachers:state.teachers,reportLog:state.reportLog,dailyGoal:state.dailyGoal};
+  downloadBlob(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),`practice-metronome-backup-${localDateKey(now())}.json`);
+}
+function exportCsv(){
+  const head=['date','instrument','title','minutes','seconds','focus_intervals','pauses','notes'];
+  const rows=state.records.map(r=>[r.date,instrumentName(r.instrumentId),r.title,Math.floor(r.durationMs/60000),Math.floor(r.durationMs/1000)%60,r.focus||0,r.pauses||0,r.notes||'']);
+  const str=[head,...rows].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  downloadBlob(new Blob(['\ufeff'+str],{type:'text/csv;charset=utf-8'}),`practice-records-${localDateKey(now())}.csv`);
+}
+async function importJson(event){
+  const file=event.target.files?.[0];if(!file)return;
+  try{
+    const obj=JSON.parse(await file.text());if(obj.format!=='PracticeMetronomeBackup'||!Array.isArray(obj.records))throw Error('Not a practice backup');
+    const valid=obj.records.filter(r=>r&&typeof r.id==='string'&&Number.isFinite(r.durationMs)&&r.durationMs>=0&&r.durationMs<1e9&&!Number.isNaN(new Date(r.date).getTime()));
+    showDialog('Import backup?',`<p>Merge ${valid.length} sessions into your saved history? Matching session IDs will not be duplicated.</p>`,[
+      {label:'Cancel',fn:()=>{}},{label:'Import',kind:'primary',fn:()=>{
+        const seen=new Set(state.records.map(r=>r.id));for(const r of valid)if(!seen.has(r.id)){state.records.push(r);seen.add(r.id)}
+        if(Array.isArray(obj.instruments))for(const inst of obj.instruments)if(inst&&inst.id&&!state.instruments.some(i=>i.id===inst.id))state.instruments.push(inst);
+        if(Array.isArray(obj.teachers))for(const t of obj.teachers)if(t&&t.id&&!state.teachers.some(i=>i.id===t.id))state.teachers.push(t);
+        if(Array.isArray(obj.reportLog))for(const r of obj.reportLog)if(r&&r.id&&!state.reportLog.some(i=>i.id===r.id))state.reportLog.push(r);
+        state.records.sort((a,b)=>new Date(b.date)-new Date(a.date));persist();refreshInstrumentSelect();renderRecords();renderReports();renderReportStatus();toast('Backup imported');
+      }}]);
+  }catch(e){toast('Could not read this backup file')}
+  event.target.value='';
+}
+function initV2(){
+  // Turn the instrument button into a real single-tap dropdown.
+  const holder=$('instrumentButton');holder.outerHTML='<select id="instrumentSelect" class="instrument-button" aria-label="Current instrument"></select>';
+  refreshInstrumentSelect();$('instrumentSelect').addEventListener('change',e=>chooseInstrument(e.target.value));
+  $('recordInstrumentFilter').addEventListener('change',e=>{selectedInstrumentFilter=e.target.value;renderRecords()});
+  $('beatsButton').onclick=editTimeSignature;
+  $('shareRecords').onclick=manualShare;$('manualShareBtn').onclick=manualShare;
+  $('createTeacherBtn').onclick=()=>teacherEditor(null);
+  $('teacherList').onclick=e=>{const b=e.target.closest('[data-teacher-action=edit]');if(b)teacherEditor(b.dataset.teacherId)};
+  $('reportHistory').onclick=e=>{
+    const b=e.target.closest('[data-report-id]');if(!b)return;const r=state.reportLog.find(x=>x.id===b.dataset.reportId);if(!r)return;
+    if(b.dataset.reportAct==='email')prepareEmail(r);
+    else if(b.dataset.reportAct==='confirm')showDialog('Confirm email was sent',`<p>Did you send the email to ${esc(r.recipient)}?</p>`,[{label:'Cancel',fn:()=>{}},{label:'Yes, I sent it',kind:'primary',fn:()=>markReport(r,'sent')}]);
+    else reportPreview(r);
+  };
+  $('reportStatus').onclick=()=>navigate('reports');$('reportStatus').onkeydown=e=>{if(e.key==='Enter')navigate('reports')};
+  $('manageInstrumentList').onclick=handleInstrumentManage;$('addInstrumentBtn').onclick=addInstrument;
+  // No dialogs ever block metronome activation after the user begins interacting.
+  for(const id of ['metPlay','bpmValue','bpmSlider','tapBtn','instrumentSelect'])$(id).addEventListener('pointerdown',()=>userHasTouchedMetronome=true,{passive:true});
+  renderBpm();renderTimers();renderRecords();renderReports();renderInstrumentManager();renderReportStatus();
+  // Reports are checked only after the metronome controls are usable.
+  makeDueReports();setTimeout(reportPromptOnOpen,900);
+}
+
+bindEvents();renderBpm();renderLamps();renderTimers();renderSettings();renderRecords();setInterval(checkTick,190);
+initV2();setInterval(persist,5000);
 // Register optional offline cache only on HTTPS / localhost, not file://.
 if('serviceWorker' in navigator&&location.protocol!=='file:'){navigator.serviceWorker.register('./service-worker.js').catch(()=>{});}
 </script></body></html>
